@@ -195,7 +195,15 @@
   @keyframes titleIn{0%{opacity:0;transform:scale(.92);filter:blur(8px) drop-shadow(0 0 0 rgba(201,162,75,0))}45%{opacity:1;filter:blur(0) drop-shadow(0 0 22px rgba(201,162,75,.7))}100%{opacity:1;transform:none;filter:blur(0) drop-shadow(0 0 0 rgba(201,162,75,0))}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @media (max-width:560px){
+    .hero{padding:36px 0 30px}
+    .wordmark{font-size:clamp(34px,11vw,46px)}
+    .tagline{margin-top:18px;font-size:clamp(18px,5.6vw,22px)}
+    .rule{margin-top:20px}
     .points,.strengths{flex-direction:column;gap:10px}
+    .strengths{margin-top:22px}
+    .warrior{margin-top:26px;font-size:clamp(20px,6vw,24px)}
+    .warrior::after{margin-top:16px}
+    .panel{margin-top:24px;padding:24px 18px}
     .fortunes{grid-template-columns:1fr}
     .card{gap:15px;padding:18px}
     .medal{flex-basis:62px;height:62px}
@@ -234,8 +242,8 @@
         <input type="text" id="name" placeholder="例：せい　めい" autocomplete="off" spellcheck="false" lang="ja">
       </div>
       <div class="field">
-        <label for="dob">生年月日</label>
-        <input type="date" id="dob" min="1900-01-01">
+        <label for="dob">生年月日<span class="hint">数字8桁で入力（例：19930818）</span></label>
+        <input type="text" id="dob" inputmode="numeric" placeholder="例：19930818" maxlength="10" autocomplete="off">
       </div>
       <button class="btn" id="go">診断する</button>
       <div class="err" id="err" role="alert"></div>
@@ -580,17 +588,18 @@ function buildReading(lp,dest,soul,z){
 function diagnose(){
   const err=document.getElementById('err');
   const nameRaw=document.getElementById('name').value.trim();
-  const dob=document.getElementById('dob').value;
   const nameRoma=kanaToRomaji(nameRaw);
   if(!nameRaw){err.textContent='お名前を入れてね。';return;}
   if(/[\u3040-\u30FF\u4E00-\u9FFF\u3400-\u4DBF]/.test(nameRoma)){
     err.textContent='お名前はひらがな（ふりがな）で入れてね。漢字だと読みが取れないんだ。（例：せい　めい）';return;}
   const letters=(nameRoma.toUpperCase().match(/[A-Z]/g)||[]).length;
   if(letters<2){err.textContent='お名前をひらがなで入れてね（例：せい　めい）。';return;}
-  if(!dob){err.textContent='生年月日を選んでね。';return;}
+  const digits=(document.getElementById('dob').value.match(/\d/g)||[]).join('');
+  if(digits.length!==8){err.textContent='生年月日は数字8桁で入れてね（例：19930818）。';return;}
+  const y=+digits.slice(0,4), m=+digits.slice(4,6), d=+digits.slice(6,8);
+  if(y<1900||y>2100||m<1||m>12||d<1||d>31){err.textContent='生年月日の数字を確認してね（例：19930818）。';return;}
   err.textContent='';
 
-  const parts=dob.split('-').map(Number),y=parts[0],m=parts[1],d=parts[2];
   const lp=lifePath(y,m,d);
   const dest=nameSum(nameRoma,'all');
   const soul=nameSum(nameRoma,'vowel');
@@ -664,6 +673,13 @@ function diagnose(){
 document.getElementById('go').addEventListener('click',diagnose);
 document.getElementById('name').addEventListener('keydown',e=>{if(e.key==='Enter')diagnose();});
 document.getElementById('dob').addEventListener('keydown',e=>{if(e.key==='Enter')diagnose();});
+document.getElementById('dob').addEventListener('input',function(){
+  const dg=(this.value.match(/\d/g)||[]).join('').slice(0,8);
+  let out=dg.slice(0,4);
+  if(dg.length>4)out+='/'+dg.slice(4,6);
+  if(dg.length>6)out+='/'+dg.slice(6,8);
+  this.value=out;
+});
 document.getElementById('again').addEventListener('click',()=>{
   document.getElementById('results').hidden=true;
   document.getElementById('name').value='';document.getElementById('dob').value='';
