@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数秘 × 星座 診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#12172B; --night-2:#1B2138;
+    --ivory:#F5F1E6; --ivory-line:#E4DDC9;
+    --ink:#1E2233; --muted:#5A5E70;
+    --brass:#C9A24B;
+    --lp:#C2512E; --dest:#2E6DB0; --soul:#1C8A6A; --zod:#C9862B;
+    --pers:#7A5BC2; --bday:#B0762B; --mat:#4A7A6B;
+    --f-work:#2E6DB0; --f-love:#C24E7A; --f-money:#BE8A1E; --f-all:#7A5BC2;
+    --disp:"Shippori Mincho",serif; --body:"Zen Kaku Gothic New",sans-serif; --num:"Fraunces",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);color:var(--ink);background:var(--night);line-height:1.75;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;overflow:hidden;padding:60px 0 44px;text-align:center;color:var(--ivory)}
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.5}
+  .hero .wrap{position:relative}
+  .eyebrow{font-family:var(--num);font-weight:600;letter-spacing:.42em;font-size:12px;text-transform:uppercase;color:var(--brass);margin-bottom:18px}
+  .wordmark{font-family:var(--disp);font-weight:800;font-size:clamp(38px,9vw,60px);line-height:1.05;letter-spacing:.02em}
+  .wordmark .x{font-family:var(--num);font-weight:400;font-style:italic;color:var(--brass);padding:0 .12em}
+  .tagline{font-family:var(--disp);font-weight:700;font-size:clamp(19px,5.2vw,28px);margin:24px auto 0;max-width:560px;color:#F5F0E2;line-height:1.55;letter-spacing:.02em}
+  .lede{max-width:500px;margin:16px auto 0;font-size:14px;color:#BFBDB2;font-weight:400}
+  .rule{width:52px;height:1px;background:var(--brass);margin:28px auto 0;opacity:.7}
+
+  /* strengths boxes */
+  .strengths{display:flex;gap:14px;max-width:620px;margin:32px auto 0;text-align:left;align-items:stretch}
+  .st{flex:1;background:rgba(201,162,75,.06);border:1px solid #3A3B52;border-radius:12px;padding:22px 20px}
+  .st-label{font-family:var(--num);font-weight:600;letter-spacing:.16em;font-size:13px;text-transform:uppercase;color:var(--brass)}
+  .st-line{font-family:var(--disp);font-weight:700;font-size:20px;color:#F1ECDD;margin-top:12px;line-height:1.55}
+  .combine-x{flex:0 0 auto;align-self:center;text-align:center;font-family:var(--num);font-style:italic;font-weight:600;font-size:34px;color:var(--brass);text-shadow:0 0 18px rgba(201,162,75,.45)}
+  /* warrior */
+  .warrior{font-family:var(--disp);font-weight:800;font-size:clamp(21px,5.6vw,32px);color:var(--ivory);margin:36px auto 0;max-width:600px;line-height:1.5;letter-spacing:.03em}
+  .warrior::after{content:"";display:block;width:60px;height:2px;background:var(--brass);margin:22px auto 0}
+
+  /* value points */
+  .points{display:flex;gap:14px;max-width:620px;margin:30px auto 0;text-align:left}
+  .pt{flex:1;background:rgba(255,255,255,.04);border:1px solid #2C3352;border-radius:12px;padding:16px 15px}
+  .pt .pn{font-family:var(--num);font-weight:600;font-size:15px;color:var(--brass);letter-spacing:.1em}
+  .pt .ph{font-family:var(--disp);font-weight:700;font-size:14px;margin:6px 0 4px;color:#F1ECDD}
+  .pt .pd{font-size:12px;color:#AEACA2;line-height:1.7}
+  .why{max-width:560px;margin:26px auto 0;font-size:13px;color:#C9C7BC;line-height:1.9}
+  .why b{color:var(--brass);font-weight:700}
+
+  /* ---------- Form ---------- */
+  .panel{background:var(--ivory);border-radius:18px;padding:28px 26px;margin:32px auto 0;max-width:520px;box-shadow:0 24px 60px -30px rgba(0,0,0,.6)}
+  .panel .ptitle{font-family:var(--disp);font-weight:700;font-size:16px;text-align:center;color:var(--ink);margin-bottom:20px}
+  .field{margin-bottom:18px}
+  label{display:block;font-family:var(--disp);font-weight:600;font-size:14px;color:var(--ink);margin-bottom:8px}
+  label .hint{font-family:var(--body);font-weight:400;color:var(--muted);font-size:12px;margin-left:8px}
+  input[type=text],input[type=date]{width:100%;font-family:var(--body);font-size:16px;color:var(--ink);background:#FBF9F2;border:1px solid var(--ivory-line);border-radius:10px;padding:13px 14px;transition:border-color .15s,box-shadow .15s}
+  input[type=text]{letter-spacing:.06em}
+  input:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(201,162,75,.22)}
+  .btn{width:100%;font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.08em;color:var(--night);background:var(--brass);border:none;border-radius:10px;padding:15px;cursor:pointer;transition:transform .08s,background .15s;margin-top:4px}
+  .btn:hover{background:#D8B461}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .err{color:var(--lp);font-size:13px;margin-top:12px;min-height:1px;font-weight:500;text-align:center}
+  details.how{margin-top:16px;border-top:1px solid var(--ivory-line);padding-top:14px}
+  details.how summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:500;list-style:none}
+  details.how summary::-webkit-details-marker{display:none}
+  details.how summary::before{content:"▸ ";color:var(--brass)}
+  details.how[open] summary::before{content:"▾ "}
+  details.how p{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.85}
+
+  /* 解説（数秘術とは・星座とは） */
+  .about{max-width:560px;margin:24px auto 0}
+  .about-lead{text-align:center;font-size:12.5px;color:#9A98A6;letter-spacing:.04em;margin-bottom:6px}
+  .about-block{background:rgba(255,255,255,.04);border:1px solid #2C3352;border-radius:14px;margin-top:14px;overflow:hidden}
+  .about-block summary{cursor:pointer;list-style:none;padding:18px 20px;font-family:var(--disp);font-weight:700;font-size:16px;color:#F1ECDD}
+  .about-block summary::-webkit-details-marker{display:none}
+  .about-block summary::before{content:"▸ ";color:var(--brass)}
+  .about-block[open] summary::before{content:"▾ "}
+  .about-body{padding:2px 20px 20px}
+  .about-body .lead{font-size:13px;color:#C9C7BC;line-height:1.95;margin-bottom:14px}
+  .about-item{display:flex;gap:12px;padding:9px 0;border-top:1px solid #232A45}
+  .about-item .k{flex:0 0 92px;font-family:var(--disp);font-weight:700;color:var(--brass);font-size:13px;line-height:1.6}
+  .about-item .v{font-size:12.5px;color:#CFCDC3;line-height:1.7}
+  .about-note{font-size:11.5px;color:#8A889A;margin-top:12px;line-height:1.7}
+
+  /* ---------- Results ---------- */
+  .results[hidden]{display:none}
+  .res-head{text-align:center;color:var(--ivory);padding:6px 0 4px}
+  .res-name{font-family:var(--num);font-weight:600;font-size:22px;letter-spacing:.08em}
+  .res-date{font-family:var(--num);font-size:13px;color:var(--brass);letter-spacing:.14em;margin-top:4px}
+
+  /* 称号バナー */
+  .titlebar{text-align:center;padding:40px 0 4px}
+  .tb-glyph{font-family:var(--body);font-size:46px;color:var(--brass);line-height:1;filter:drop-shadow(0 0 14px rgba(201,162,75,.45))}
+  .tb-label{font-family:var(--num);font-weight:600;letter-spacing:.4em;font-size:11px;text-transform:uppercase;color:var(--brass);margin-top:16px;padding-left:.4em}
+  .tb-title{font-family:var(--disp);font-weight:800;font-size:clamp(30px,8.2vw,52px);line-height:1.18;letter-spacing:.04em;margin-top:12px;
+    background:linear-gradient(180deg,#F6E8BC 0%,#DBB65C 52%,#A9832F 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--brass)}
+  .tb-sub{font-family:var(--num);font-size:13px;color:#BFBDB2;letter-spacing:.12em;margin-top:14px}
+
+  /* 読み解き */
+  .reading{background:var(--ivory);border-radius:16px;padding:28px 26px;margin:12px auto 0;max-width:640px;
+    border-top:4px solid var(--brass);box-shadow:0 18px 44px -30px rgba(0,0,0,.6)}
+  .reading p{font-size:14.5px;line-height:2.05;color:var(--ink);margin-bottom:15px}
+  .reading p:last-child{margin-bottom:0}
+  .reading b{color:#A9781C;font-weight:700}
+  .reading .close{display:block;margin-top:8px;font-family:var(--disp);font-weight:700;color:var(--ink)}
+
+  .sec-label{text-align:center;margin:34px 0 6px}
+  .sec-label .en{font-family:var(--num);font-weight:600;letter-spacing:.3em;font-size:10px;text-transform:uppercase;color:var(--brass);display:block}
+  .sec-label .ja{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--ivory);letter-spacing:.1em}
+
+  .card{background:var(--ivory);border-radius:16px;padding:22px;margin-top:14px;display:flex;gap:20px;align-items:flex-start;border-left:5px solid var(--c)}
+  .medal{flex:0 0 74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;border:1.5px solid var(--c);background:#FBF9F2}
+  .medal::after{content:"";position:absolute;inset:6px;border-radius:50%;border:1px solid var(--c);opacity:.35}
+  .medal .n{font-family:var(--num);font-weight:600;color:var(--c);line-height:1}
+  .medal .n.one{font-size:36px}.medal .n.two{font-size:28px}
+  .medal .n.glyph{font-size:36px;font-family:var(--body)}
+  .card-body{flex:1;min-width:0}
+  .slot{font-family:var(--num);font-weight:600;letter-spacing:.22em;text-transform:uppercase;font-size:11px;color:var(--c)}
+  .title{font-family:var(--disp);font-weight:700;font-size:17px;color:var(--ink);margin:3px 0 8px}
+  .desc{font-size:14px;color:var(--ink)}
+  .meta{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .base{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .caution{font-size:12.5px;color:#8A4A34;margin-top:8px}
+  .caution b{font-weight:700}
+
+  /* Fortune */
+  .fortunes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .fort{background:var(--ivory);border-radius:16px;padding:20px;border-top:4px solid var(--c)}
+  .fort.wide{grid-column:1 / -1}
+  .fort-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .fort-name{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--ink)}
+  .stars{font-size:15px;letter-spacing:2px;line-height:1}
+  span.stars{position:static;color:var(--c);opacity:1}
+  .fort-txt{font-size:13.5px;color:var(--ink);line-height:1.85}
+
+  .synth{background:var(--night-2);border:1px solid #2C3352;border-radius:16px;padding:22px;margin-top:22px;color:#DCDAD0}
+  .synth h3{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--brass);letter-spacing:.1em;margin-bottom:10px}
+  .synth p{font-size:13.5px;line-height:1.9}
+  .synth .em{color:#fff;font-weight:500}
+
+  /* 面談予約CTA */
+  .cta{position:relative;overflow:hidden;text-align:center;max-width:600px;margin:30px auto 0;
+    padding:34px 26px;border-radius:18px;border:1px solid var(--brass);
+    background:linear-gradient(160deg,#1E2547,#141A31 70%);
+    box-shadow:0 20px 50px -28px rgba(0,0,0,.7)}
+  .cta::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0%,rgba(201,162,75,.20),transparent 62%)}
+  .cta .eb{position:relative;font-family:var(--num);font-weight:600;letter-spacing:.4em;
+    font-size:11px;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+  .cta h3{position:relative;font-family:var(--disp);font-weight:800;font-size:clamp(20px,5vw,26px);
+    color:#F7F2E4;letter-spacing:.03em;margin-bottom:14px;line-height:1.4}
+  .cta p{position:relative;font-size:14px;line-height:1.95;color:#CFCDC3;max-width:460px;margin:0 auto}
+  .cta .price{position:relative;display:inline-block;margin:20px 0 6px;font-family:var(--disp);
+    font-weight:700;font-size:18px;color:#F1ECDD}
+  .cta .price span{font-family:var(--num);color:var(--brass)}
+  .cta .plan{position:relative;font-size:12.5px;color:#AEACA2;margin-bottom:22px}
+  .cta .book{position:relative;display:inline-block;font-family:var(--disp);font-weight:700;
+    font-size:16px;letter-spacing:.06em;color:var(--night);background:var(--brass);
+    text-decoration:none;padding:14px 30px;border-radius:10px;transition:background .15s}
+  .cta .book:hover{background:#D8B461}
+  .cta .mail{position:relative;display:block;margin-top:16px;font-size:12.5px;color:#AEACA2}
+  .cta .mail a{color:var(--brass);text-decoration:none}
+
+  .foot{color:#7B7F92;font-size:12px;text-align:center;padding:26px 10px 46px;line-height:1.9}
+  .foot .again{display:inline-block;margin-top:14px;color:var(--brass);background:none;border:1px solid #3A4166;border-radius:8px;padding:9px 18px;font-family:var(--body);font-size:13px;cursor:pointer}
+  .foot .again:hover{border-color:var(--brass)}
+
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(14px);animation:rise .5s ease forwards}
+    @keyframes rise{to{opacity:1;transform:none}}
+    /* hero combine sequence */
+    .st-num{opacity:0;animation:boxL .7s ease .3s forwards}
+    .st-zod{opacity:0;animation:boxR .7s ease .3s forwards}
+    .combine-x{opacity:0;animation:xPop .7s cubic-bezier(.2,.8,.3,1.5) 1.05s forwards}
+    .warrior{opacity:0;animation:warIn 1s ease 1.7s forwards}
+  }
+  @keyframes boxL{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes boxR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes xPop{0%{opacity:0;transform:scale(0) rotate(-120deg)}55%{opacity:1;transform:scale(1.4) rotate(0);text-shadow:0 0 30px rgba(201,162,75,.9)}100%{opacity:1;transform:scale(1);text-shadow:0 0 18px rgba(201,162,75,.45)}}
+  @keyframes warIn{0%{opacity:0;transform:scale(.9);filter:blur(7px)}45%{opacity:1;text-shadow:0 0 28px rgba(201,162,75,.75)}100%{opacity:1;transform:scale(1);filter:blur(0);text-shadow:0 0 0 rgba(201,162,75,0)}}
+  @media (prefers-reduced-motion: no-preference){
+    .reveal-title .tb-glyph{opacity:0;animation:glyphIn .7s cubic-bezier(.2,.8,.3,1.5) .1s forwards}
+    .reveal-title .tb-title{opacity:0;animation:titleIn 1s ease .5s forwards}
+    .reveal-title .tb-label,.reveal-title .tb-sub{opacity:0;animation:fadeUp .7s ease .9s forwards}
+  }
+  @keyframes glyphIn{0%{opacity:0;transform:scale(0) rotate(-90deg)}60%{opacity:1;transform:scale(1.25) rotate(0)}100%{opacity:1;transform:scale(1)}}
+  @keyframes titleIn{0%{opacity:0;transform:scale(.92);filter:blur(8px) drop-shadow(0 0 0 rgba(201,162,75,0))}45%{opacity:1;filter:blur(0) drop-shadow(0 0 22px rgba(201,162,75,.7))}100%{opacity:1;transform:none;filter:blur(0) drop-shadow(0 0 0 rgba(201,162,75,0))}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (max-width:560px){
+    .hero{padding:36px 0 30px}
+    .wordmark{font-size:clamp(34px,11vw,46px)}
+    .tagline{margin-top:18px;font-size:clamp(18px,5.6vw,22px)}
+    .rule{margin-top:20px}
+    .points,.strengths{flex-direction:column;gap:10px}
+    .strengths{margin-top:22px}
+    .warrior{margin-top:26px;font-size:clamp(20px,6vw,24px)}
+    .warrior::after{margin-top:16px}
+    .panel{margin-top:24px;padding:24px 18px}
+    .fortunes{grid-template-columns:1fr}
+    .card{gap:15px;padding:18px}
+    .medal{flex-basis:62px;height:62px}
+    .medal .n.one{font-size:30px}.medal .n.two{font-size:24px}.medal .n.glyph{font-size:30px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="stars" aria-hidden="true" preserveAspectRatio="none"></svg>
+  <div class="wrap">
+    <div class="eyebrow">Numerology <span style="font-style:normal">×</span> Zodiac</div>
+    <h1 class="wordmark">数秘<span class="x">×</span>星座</h1>
+    <p class="tagline">数秘と星座であなたの人生を切り開く。<br>輝かしい未来がここにある。</p>
+    <div class="rule"></div>
+
+    <div class="strengths">
+      <div class="st st-num">
+        <div class="st-label">数秘 — Numerology</div>
+        <div class="st-line">あなたの秘めたる武器</div>
+      </div>
+      <div class="combine-x" aria-hidden="true">×</div>
+      <div class="st st-zod">
+        <div class="st-label">星座 — Zodiac</div>
+        <div class="st-line">古代よりつながる、<br>あなたという人間の理解</div>
+      </div>
+    </div>
+
+    <p class="warrior">この世界であなたという戦士が躍動する</p>
+
+    <div class="panel">
+      <div class="ptitle">さっそく診断する</div>
+      <div class="field">
+        <label for="name">名前<span class="hint">ふりがな（ひらがなで姓名）</span></label>
+        <input type="text" id="name" placeholder="例：せい　めい" autocomplete="off" spellcheck="false" lang="ja">
+      </div>
+      <div class="field">
+        <label for="dob">生年月日<span class="hint">数字8桁で入力（例：19930818）</span></label>
+        <input type="text" id="dob" inputmode="numeric" placeholder="例：19930818" maxlength="10" autocomplete="off">
+      </div>
+      <button class="btn" id="go">診断する</button>
+      <div class="err" id="err" role="alert"></div>
+      <details class="how">
+        <summary>計算の仕組み</summary>
+        <p>名前は入力されたふりがな（ひらがな）を内部でローマ字に変換し、英字を A=1〜I=9 の順で数値化する古典方式で計算します。ライフパス＝生年月日の全桁。ディスティニー＝名前すべての文字。ソウル＝名前の母音のみ。パーソナリティ＝名前の子音のみ。バースデー＝生まれた日。マチュリティ＝ライフパス＋ディスティニー。合計が 11・22・33 のときはマスターナンバーとしてそのまま扱います。星座は生年月日から。</p>
+      </details>
+    </div>
+
+    <div class="about">
+      <div class="about-lead">診断の前に、ちょっとだけ豆知識</div>
+
+      <details class="about-block">
+        <summary>数秘術（すうひじゅつ）ってなに？</summary>
+        <div class="about-body">
+          <p class="lead">数秘術（ヌメロロジー）は、生年月日や名前を1桁の数字に変換し、その数字が持つ意味からその人の性質や強みを読み解く占い。古代ギリシャの数学者ピタゴラスに由来するとも言われ、世界中で自己理解の道具として使われてきました。1〜9それぞれに象徴的な意味があり、11・22・33は「マスターナンバー」と呼ばれる特別な数字です。</p>
+          <div class="about-item"><div class="k">1・開拓</div><div class="v">独立心と行動力で先頭を切るリーダー。</div></div>
+          <div class="about-item"><div class="k">2・協調</div><div class="v">繊細で気配り上手、人と人をつなぐ調停役。</div></div>
+          <div class="about-item"><div class="k">3・表現</div><div class="v">明るく社交的、言葉と創造性で人を惹きつける。</div></div>
+          <div class="about-item"><div class="k">4・安定</div><div class="v">几帳面で粘り強い、コツコツ築く堅実家。</div></div>
+          <div class="about-item"><div class="k">5・自由</div><div class="v">変化と刺激を好む、多才で行動が速い冒険家。</div></div>
+          <div class="about-item"><div class="k">6・愛情</div><div class="v">責任感が強く面倒見がいい、支える守護者。</div></div>
+          <div class="about-item"><div class="k">7・探究</div><div class="v">内省的で知的、物事を深く掘り下げる分析家。</div></div>
+          <div class="about-item"><div class="k">8・実力</div><div class="v">野心と組織力で成果を出す、達成者。</div></div>
+          <div class="about-item"><div class="k">9・博愛</div><div class="v">視野が広く、人や世の中のために動く理想家。</div></div>
+          <div class="about-item"><div class="k">11・直感</div><div class="v">鋭い直感で人を導く啓発者。（マスターナンバー）</div></div>
+          <div class="about-item"><div class="k">22・実現</div><div class="v">大きな夢を現実の形にする建設者。（マスターナンバー）</div></div>
+          <div class="about-item"><div class="k">33・慈愛</div><div class="v">無償の愛で人を包み導く聖者。（マスターナンバー）</div></div>
+        </div>
+      </details>
+
+      <details class="about-block">
+        <summary>星座（せいざ）ってなに？</summary>
+        <div class="about-body">
+          <p class="lead">西洋占星術では、生まれた日の太陽の位置で12星座に分けられ、それぞれ生まれ持った気質や個性を表すとされます。4つのエレメント（火＝情熱／地＝現実／風＝知性／水＝感情）と3つの性質（活動宮＝始める力／不動宮＝やり抜く力／柔軟宮＝合わせる力）の組み合わせで、その人の基本的なスタイルが読み解かれます。</p>
+          <div class="about-item"><div class="k">♈ 牡羊座</div><div class="v">情熱的で行動的、先陣を切る開拓者。（火）</div></div>
+          <div class="about-item"><div class="k">♉ 牡牛座</div><div class="v">堅実でマイペース、五感が鋭い安定型。（地）</div></div>
+          <div class="about-item"><div class="k">♊ 双子座</div><div class="v">好奇心旺盛で情報通、軽快な社交家。（風）</div></div>
+          <div class="about-item"><div class="k">♋ 蟹座</div><div class="v">面倒見がよく情に厚い、家庭的な人。（水）</div></div>
+          <div class="about-item"><div class="k">♌ 獅子座</div><div class="v">存在感と自己表現、華やかなリーダー。（火）</div></div>
+          <div class="about-item"><div class="k">♍ 乙女座</div><div class="v">几帳面で分析的、丁寧に仕上げる職人肌。（地）</div></div>
+          <div class="about-item"><div class="k">♎ 天秤座</div><div class="v">バランス感覚と社交性、洗練された調整役。（風）</div></div>
+          <div class="about-item"><div class="k">♏ 蠍座</div><div class="v">一途で情熱的、本質を見抜く洞察力。（水）</div></div>
+          <div class="about-item"><div class="k">♐ 射手座</div><div class="v">楽観的で自由、大局を追う冒険家。（火）</div></div>
+          <div class="about-item"><div class="k">♑ 山羊座</div><div class="v">努力家で責任感が強く、目標を積み上げる。（地）</div></div>
+          <div class="about-item"><div class="k">♒ 水瓶座</div><div class="v">独創的で自由な発想、既成概念を壊す改革者。（風）</div></div>
+          <div class="about-item"><div class="k">♓ 魚座</div><div class="v">共感力と想像力、人の心に敏感で優しい。（水）</div></div>
+          <p class="about-note">※星座の期間の境目（前後1日ほど）は年によって変わることがあります。</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<main class="results" id="results" hidden>
+  <div class="wrap">
+    <div class="titlebar" id="titlebar">
+      <div class="tb-glyph" id="tbGlyph"></div>
+      <div class="tb-label">あなたの称号</div>
+      <div class="tb-title" id="tbTitle"></div>
+      <div class="tb-sub" id="tbSub"></div>
+    </div>
+
+    <div class="res-head">
+      <div class="res-name" id="rName"></div>
+      <div class="res-date" id="rDate"></div>
+    </div>
+
+    <div class="sec-label"><span class="en">Overview</span><span class="ja">総合プロフィール</span></div>
+    <p id="overview" style="color:#DCDAD0;font-size:14px;line-height:1.95;text-align:center;max-width:640px;margin:8px auto 0"></p>
+
+    <div class="sec-label"><span class="en">Your Reading</span><span class="ja">あなたという人へ</span></div>
+    <div class="reading" id="reading"></div>
+
+    <div class="sec-label"><span class="en">Core Numbers</span><span class="ja">コアナンバー</span></div>
+    <div id="coreCards"></div>
+
+    <div class="sec-label"><span class="en">Deeper Layers</span><span class="ja">さらに深掘り</span></div>
+    <div id="subCards"></div>
+
+    <div class="sec-label"><span class="en">Star Sign</span><span class="ja">星座</span></div>
+    <div id="zodCard"></div>
+
+    <div class="sec-label"><span class="en">Fortune</span><span class="ja">運勢</span></div>
+    <div class="fortunes" id="fortunes"></div>
+
+    <div class="synth">
+      <h3>読みのヒント</h3>
+      <p id="synthText"></p>
+    </div>
+
+    <div class="cta">
+      <div class="eb">個別鑑定のご案内</div>
+      <h3>あなたの未来を、もっと深く。</h3>
+      <p>この診断でわかるのは「あなたが今どんな人か」まで。数秘と星座は、これからどう動けば運が味方するか——あなたの未来の地図まで読み解けます。もっと大きく知りたい方は、個別の面談鑑定でお話ししましょう。</p>
+      <div class="price">60分　<span>8,000円</span></div>
+      <div class="plan">オンライン面談（Zoom等）／ 事前のお申し込み制</div>
+      <a class="book" href="mailto:screeeam18@gmail.com?subject=%E9%9D%A2%E8%AB%87%E9%91%91%E5%AE%9A%E3%81%AE%E4%BA%88%E7%B4%84%E5%B8%8C%E6%9C%9B&body=%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%88%E3%81%B5%E3%82%8A%E3%81%8C%E3%81%AA%EF%BC%89%E3%80%81%E7%94%9F%E5%B9%B4%E6%9C%88%E6%97%A5%E3%80%81%E3%81%94%E5%B8%8C%E6%9C%9B%E3%81%AE%E6%97%A5%E7%A8%8B%E3%82%92%E3%81%94%E8%A8%98%E5%85%A5%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82">メールで面談を予約する</a>
+      <span class="mail">ご予約・お問い合わせ：<a href="mailto:screeeam18@gmail.com">screeeam18@gmail.com</a></span>
+    </div>
+
+    <div class="foot">
+      この診断は占い（数秘術・西洋占星術）で、科学的な裏付けがあるものではありません。<br>
+      当たり外れより、自分や相手を知るきっかけとして。判断は、実際に見ている姿を主に。
+      <br><button class="again" id="again">別の人を診断する</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* 星空 */
+(function(){
+  const svg=document.querySelector('.hero .stars');
+  const W=100,H=100;let s='';
+  for(let i=0;i<46;i++){
+    const x=(Math.random()*W).toFixed(2),y=(Math.random()*H).toFixed(2);
+    const r=(Math.random()*0.28+0.06).toFixed(2),o=(Math.random()*0.5+0.2).toFixed(2);
+    s+='<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#EDE8DA" opacity="'+o+'"/>';
+  }
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.innerHTML=s;
+})();
+
+/* かな → ローマ字（ヘボン式） */
+const KANA={
+"きゃ":"kya","きゅ":"kyu","きょ":"kyo","しゃ":"sha","しゅ":"shu","しょ":"sho",
+"ちゃ":"cha","ちゅ":"chu","ちょ":"cho","にゃ":"nya","にゅ":"nyu","にょ":"nyo",
+"ひゃ":"hya","ひゅ":"hyu","ひょ":"hyo","みゃ":"mya","みゅ":"myu","みょ":"myo",
+"りゃ":"rya","りゅ":"ryu","りょ":"ryo","ぎゃ":"gya","ぎゅ":"gyu","ぎょ":"gyo",
+"じゃ":"ja","じゅ":"ju","じょ":"jo","ぢゃ":"ja","ぢゅ":"ju","ぢょ":"jo",
+"びゃ":"bya","びゅ":"byu","びょ":"byo","ぴゃ":"pya","ぴゅ":"pyu","ぴょ":"pyo",
+"あ":"a","い":"i","う":"u","え":"e","お":"o",
+"か":"ka","き":"ki","く":"ku","け":"ke","こ":"ko",
+"さ":"sa","し":"shi","す":"su","せ":"se","そ":"so",
+"た":"ta","ち":"chi","つ":"tsu","て":"te","と":"to",
+"な":"na","に":"ni","ぬ":"nu","ね":"ne","の":"no",
+"は":"ha","ひ":"hi","ふ":"fu","へ":"he","ほ":"ho",
+"ま":"ma","み":"mi","む":"mu","め":"me","も":"mo",
+"や":"ya","ゆ":"yu","よ":"yo",
+"ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro",
+"わ":"wa","ゐ":"i","ゑ":"e","を":"o","ん":"n",
+"が":"ga","ぎ":"gi","ぐ":"gu","げ":"ge","ご":"go",
+"ざ":"za","じ":"ji","ず":"zu","ぜ":"ze","ぞ":"zo",
+"だ":"da","ぢ":"ji","づ":"zu","で":"de","ど":"do",
+"ば":"ba","び":"bi","ぶ":"bu","べ":"be","ぼ":"bo",
+"ぱ":"pa","ぴ":"pi","ぷ":"pu","ぺ":"pe","ぽ":"po",
+"ぁ":"a","ぃ":"i","ぅ":"u","ぇ":"e","ぉ":"o","ゃ":"ya","ゅ":"yu","ょ":"yo"
+};
+function kanaToRomaji(str){
+  /* カタカナ→ひらがな */
+  let s='';
+  for(const ch of str){const c=ch.codePointAt(0);s+=(c>=0x30A1&&c<=0x30F6)?String.fromCodePoint(c-0x60):ch;}
+  let out='',i=0,gem=false;
+  while(i<s.length){
+    const one=s[i], two=s.substr(i,2);
+    if(one==='っ'){gem=true;i++;continue;}
+    if(one==='ー'||one==='　'){i++;continue;}
+    let rom=null,adv=1;
+    if(KANA[two]){rom=KANA[two];adv=2;}
+    else if(KANA[one]){rom=KANA[one];adv=1;}
+    if(rom===null){out+=one;i++;gem=false;continue;} /* ローマ字/その他はそのまま */
+    if(gem&&rom.length){out+=rom[0];gem=false;}
+    out+=rom;i+=adv;
+  }
+  return out;
+}
+
+/* 数秘ロジック */
+function letterVal(c){return ((c.charCodeAt(0)-65)%9)+1;}
+function reduceNum(n){while(n>9&&n!==11&&n!==22&&n!==33){n=String(n).split('').reduce((a,d)=>a+ +d,0);}return n;}
+function lifePath(y,m,d){const s=(''+y+String(m).padStart(2,'0')+String(d).padStart(2,'0')).split('');return reduceNum(s.reduce((a,c)=>a+ +c,0));}
+function nameSum(name,mode){const V='AEIOU';let sum=0;for(const c of name.toUpperCase()){if(c<'A'||c>'Z')continue;const isV=V.includes(c);if(mode==='vowel'&&!isV)continue;if(mode==='cons'&&isV)continue;sum+=letterVal(c);}return reduceNum(sum);}
+
+/* 数字の意味 */
+const NUM={
+  1:{label:"リーダー・開拓者",desc:"独立心と先導力。自分で道を切り拓く。",caution:"独断・頑固／孤立しやすい"},
+  2:{label:"協調・調停者",desc:"繊細で気配り上手。人と人をつなぐ。",caution:"優柔不断／気にしすぎ・流されやすい"},
+  3:{label:"表現者・コミュニケーター",desc:"言葉と創造性で人を巻き込む。明るく社交的。",caution:"散りやすい／深掘り前に次へ行きがち"},
+  4:{label:"堅実な土台づくり",desc:"几帳面で粘り強い。仕組みを作りコツコツやり切る。",caution:"融通が利きにくい／変化が苦手・頑固"},
+  5:{label:"自由人・冒険者",desc:"変化と刺激を好む。多才で行動が速い。",caution:"飽きっぽい／腰が定まらず散漫"},
+  6:{label:"世話役・調整役",desc:"人を支え、場の調和を保つ。責任感と愛情。",caution:"抱え込み・お節介／自己犠牲になりがち"},
+  7:{label:"探究者・分析家",desc:"内省的で知的。物事を深く掘り下げる専門家肌。",caution:"閉じこもりがち／理屈っぽく人を寄せ付けにくい"},
+  8:{label:"実力者・達成者",desc:"野心と組織力。目標を結果に変える推進力。",caution:"仕事偏重・支配的／人が置き去りに"},
+  9:{label:"理想家・人道タイプ",desc:"視野が広く、人や世の中のために動く。器が大きい。",caution:"手を広げすぎ／情に流され境界が曖昧"},
+  11:{label:"マスターナンバー・啓発者",desc:"鋭い直感とひらめき。理想を人に伝え照らす。",caution:"神経が繊細／理想と現実のギャップに揺れる"},
+  22:{label:"マスターナンバー・建設者",desc:"大きなビジョンを現実の形にする力。スケールが大きい。",caution:"プレッシャー・燃え尽き／背負いすぎ"},
+  33:{label:"マスターナンバー・奉仕の教師",desc:"無償の愛と包容力で人を導く。稀有な数字。",caution:"自己犠牲が過ぎる／理想が重荷になりやすい"}
+};
+
+/* 星座 */
+const ZOD=[
+  {n:"牡羊座",g:"♈",r:"火星",e:"火",q:"活動宮",desc:"開拓者。先陣を切る行動力とスピード、負けん気。",caution:"せっかち・衝動的／勢いで突っ走りがち",from:[3,21],to:[4,19]},
+  {n:"牡牛座",g:"♉",r:"金星",e:"地",q:"不動宮",desc:"堅実でマイペース。五感が鋭く、粘り強い安定型。",caution:"頑固／変化を嫌い腰が重い",from:[4,20],to:[5,20]},
+  {n:"双子座",g:"♊",r:"水星",e:"風",q:"柔軟宮",desc:"好奇心旺盛で情報通。軽快な会話とフットワーク。",caution:"飽きっぽい／二面的・移り気",from:[5,21],to:[6,21]},
+  {n:"蟹座",g:"♋",r:"月",e:"水",q:"活動宮",desc:"面倒見がよく情に厚い。仲間を守る家族的な温かさ。",caution:"気分の波／内輪びいき・防御的",from:[6,22],to:[7,22]},
+  {n:"獅子座",g:"♌",r:"太陽",e:"火",q:"不動宮",desc:"存在感と自己表現。場を温めるリーダーの華。",caution:"プライド・承認欲求／頑固",from:[7,23],to:[8,22]},
+  {n:"乙女座",g:"♍",r:"水星",e:"地",q:"柔軟宮",desc:"几帳面で分析的。細部に気づき、丁寧に仕上げる。",caution:"完璧主義／批判的・心配性",from:[8,23],to:[9,22]},
+  {n:"天秤座",g:"♎",r:"金星",e:"風",q:"活動宮",desc:"バランス感覚と社交性。公平で洗練された調整役。",caution:"優柔不断／八方美人・対立回避",from:[9,23],to:[10,23]},
+  {n:"蠍座",g:"♏",r:"冥王星",e:"水",q:"不動宮",desc:"一途で情熱的。深く集中し、本質を見抜く洞察力。",caution:"執着・嫉妬／秘密主義で読めない",from:[10,24],to:[11,21]},
+  {n:"射手座",g:"♐",r:"木星",e:"火",q:"柔軟宮",desc:"楽観的で自由。大局と意義を追う冒険心、正直さ。",caution:"率直すぎる／束縛を嫌い飽きやすい",from:[11,22],to:[12,21]},
+  {n:"山羊座",g:"♑",r:"土星",e:"地",q:"活動宮",desc:"努力家で責任感。長期目標をコツコツ積み上げる。",caution:"堅すぎる・悲観的／仕事偏重",from:[12,22],to:[1,19]},
+  {n:"水瓶座",g:"♒",r:"天王星",e:"風",q:"不動宮",desc:"独創的で自由な発想。既成概念にとらわれない改革者。",caution:"マイペースすぎ／感情が読みにくく距離を置く",from:[1,20],to:[2,18]},
+  {n:"魚座",g:"♓",r:"海王星",e:"水",q:"柔軟宮",desc:"共感力と想像力。人の気持ちに敏感で優しい。",caution:"流されやすい／対立回避・優柔不断",from:[2,19],to:[3,20]}
+];
+function zodiac(m,d){
+  for(const z of ZOD){
+    const fm=z.from[0],fd=z.from[1],tm=z.to[0],td=z.to[1];
+    if(fm<=tm){ if((m>fm||(m===fm&&d>=fd))&&(m<tm||(m===tm&&d<=td)))return z; }
+    else{ if((m>fm||(m===fm&&d>=fd))||(m<tm||(m===tm&&d<=td)))return z; }
+  }
+  return ZOD[0];
+}
+
+/* 称号（数秘×星座） */
+const PERSONA={1:"開拓者",2:"調停者",3:"表現者",4:"築き手",5:"冒険者",6:"守護者",7:"探究者",8:"覇者",9:"導き手",11:"光の使者",22:"創造者",33:"聖者"};
+const MOOD={"牡羊座":"情熱の","牡牛座":"揺るがぬ","双子座":"風の","蟹座":"月光の","獅子座":"華やかなる","乙女座":"精緻なる","天秤座":"優雅なる","蠍座":"静かなる","射手座":"天翔ける","山羊座":"不屈の","水瓶座":"革新の","魚座":"夢見る"};
+/* 読み解き用 */
+const ROLE={1:"自ら道を切り拓く人",2:"人と人をつなぐ人",3:"伝え広める人",4:"着実に築く人",5:"場を動かす人",6:"人を支える人",7:"深く見極める人",8:"結果を出す人",9:"意義を描く人",11:"人を照らす人",22:"構想を形にする人",33:"与え導く人"};
+const ESSENCE={1:"自分で切り拓くこと",2:"人と調和すること",3:"表現し発信すること",4:"着実に築くこと",5:"自由に動くこと",6:"人を支え守ること",7:"深く探究すること",8:"成し遂げること",9:"理想を描くこと",11:"直感で人を照らすこと",22:"大きな夢を形にすること",33:"愛を持って与えること"};
+/* 星座エレメントの掛け合わせ素材 */
+const ELEM={"火":{power:"燃えるような情熱と行動力",add:"勢いよく前へ押し出す推進力",vibe:"熱量",close:"あなたが本気で動けば、周りにも自然と火が移っていく。",push:"その炎のまま、迷わず進め。"},
+"地":{power:"地に足のついた現実感覚",add:"じっくり形にして根づかせる安定感",vibe:"安定感",close:"あなたがそこに在るだけで、周りは安心して根を張れる。",push:"焦らず一歩ずつ、あなたの歩幅で。"},
+"風":{power:"軽やかな知性とコミュニケーション力",add:"人と情報を素早くつなぐ機動力",vibe:"軽やかさ",close:"あなたが風を通すたび、停滞した場所に新しい流れが生まれる。",push:"軽やかに、好奇心の向かうままに。"},
+"水":{power:"深い共感力と直感",add:"人の心の機微をすくい取る繊細さ",vibe:"温かさ",close:"あなたがそばにいると、人は自分の本音に還っていける。",push:"その優しさを信じて、流れに乗って。"}};
+const QUAL={"活動宮":"自ら動き出して物事を始める起爆力",
+"不動宮":"一度決めたら揺るがずやり抜く粘り強さ",
+"柔軟宮":"状況に合わせてしなやかに形を変える適応力"};
+/* 人ごとに変わる素材 */
+const CONTRIB={1:"ゼロから道を切り拓く力",2:"人と人を結ぶ調整の力",3:"想いを言葉にして広める力",4:"地道に積み上げ形にする力",5:"停滞を破って動かす力",6:"人を支え場をまとめる力",7:"本質を見抜き深める力",8:"目標を成果に変える力",9:"大きな理想を描く力",11:"直感でひらめきを掴む力",22:"壮大な構想を現実にする力",33:"深い愛で人を包む力"};
+const FLOW={1:"何もないところに道をつくる",2:"人と人をつなぐ",3:"アイデアを言葉にして広める",4:"こつこつ形にして仕上げる",5:"流れを変えて前へ進める",6:"周りを支えてまとめる",7:"深く掘って本質にたどり着く",8:"成果と数字に落とし込む",9:"意義とビジョンを描く",11:"ひらめきを掴む",22:"大きな構想を組み立てる",33:"惜しみなく与えて満たす"};
+const MISSION={1:"あなたが先頭に立てば、人は安心してついてきます。",2:"あなたがいるだけで、その場の空気はやわらかくまとまります。",3:"あなたが言葉にすれば、それは誰かの心を動かします。",4:"あなたが積み上げたものは、時間が経つほど価値を増していきます。",5:"あなたが動けば、止まっていたものが動き出します。",6:"あなたが支えることで、誰かが安心して力を発揮できます。",7:"あなたが掘り下げた答えは、多くの人の道しるべになります。",8:"あなたが本気を出せば、届かないと思えた目標にも手が届きます。",9:"あなたが描く理想は、まわりの人の視野を広げます。",11:"あなたのひらめきは、誰かの暗がりを照らす光になります。",22:"あなたの構想は、いつか誰かの当たり前になるほどの規模を秘めています。",33:"あなたが注ぐ愛は、受け取った人の心に長く残ります。"};
+const SKY={"牡羊座":"牡羊が真っ先に駆け出すように、あなたは誰よりも早く一歩を踏み出せる人です。","牡牛座":"大地がどっしりと動かないように、あなたは何があっても揺るがない土台になれる人です。","双子座":"風が軽やかに巡るように、あなたは人と人、情報と情報を軽々とつなげる人です。","蟹座":"満ち引きする潮のように、あなたは人の心に寄り添い、包み込める人です。","獅子座":"獅子が舞台の中央で輝くように、あなたは人の前に立つほど輝ける人です。","乙女座":"職人が細部を仕上げるように、あなたは誰も気づかない部分まで丁寧に整えられる人です。","天秤座":"天秤が釣り合いを取るように、あなたは対立の間にも心地よい均衡を生み出せる人です。","蠍座":"深い海の底のように、あなたは物事の奥の奥まで見通せる人です。","射手座":"放たれた矢が遠くを射抜くように、あなたは遥か先の目標を見据えて進める人です。","山羊座":"山を一歩ずつ登るように、あなたは高い頂へ着実にたどり着ける人です。","水瓶座":"誰も見たことのない発想で、あなたは新しい時代の扉を開ける人です。","魚座":"静かな水面が空を映すように、あなたは目に見えない想いまで感じ取れる人です。"};
+const FINAL={"火":"どうか、その情熱を恐れず前へ。あなたの進んだ道が、そのまま光になります。","地":"どうか、あなたのペースを信じて。積み重ねた一歩が、確かな未来をつくります。","風":"どうか、その自由な発想のままに。あなたの軽やかさが、まわりを新しい場所へ運びます。","水":"どうか、その優しさを大切に。あなたの感じる力が、いつか誰かの救いになります。"};
+
+/* 運勢テキスト */
+const WORK={
+  1:"リーダーや起業向き。自分で決めて動ける環境で伸びる。",2:"支援・調整役で真価を発揮。チームの潤滑油として信頼される。",
+  3:"発信・企画・接客など『伝える仕事』が天職。人前で輝く。",4:"実務・管理・専門職で堅実に成果。任された仕事を確実にやり切る。",
+  5:"変化のある仕事・営業・企画で活躍。刺激があるほど伸びる。",6:"教育・サポート・調整役。人の面倒を見る仕事で頼られる。",
+  7:"研究・分析・専門職。一人で深く掘る仕事で強みが出る。",8:"経営・管理・大きな案件で本領。責任とスケールが増すほど燃える。",
+  9:"意義のある仕事・対人・クリエイティブ。大きな目的があると力を出す。",11:"ひらめきと導く力。企画・指導・表現で個性が光る。",
+  22:"大きなプロジェクトを形にする力。スケールの大きい仕事で真価。",33:"人を育て支える仕事に天性。教育・ケア・奉仕で満たされる。"};
+const LOVE={
+  1:"情熱的でリード型。ぐいぐい引っ張るが、相手を尊重する余白も大事に。",2:"尽くす愛情型。寄り添える一方、自分の気持ちも言葉にして。",
+  3:"明るく楽しい恋。会話とユーモアで惹きつける、飽きさせない魅力。",4:"誠実で一途。ゆっくり信頼を育てる安定型。素直な表現が鍵。",
+  5:"自由な恋を好む。束縛より、並走できる相手と長続きする。",6:"家庭的で面倒見のいい愛。尽くしすぎ・世話焼きすぎに注意。",
+  7:"心を開くまで慎重だが、開いた相手は深く愛す。一人の時間も大切に。",8:"情熱的で頼れる。主導権を握りがちなので、対等さを意識すると◎。",
+  9:"包容力のある博愛型。理想が高い分、目の前の相手を見る目も大切に。",11:"感受性豊かなロマンチスト。共感でつながるが、傷つきやすさも。",
+  22:"深く長く付き合う本気型。一緒に何かを築ける相手と相性がいい。",33:"無償の愛で包むタイプ。与えすぎて疲れないよう、受け取ることも。"};
+const MONEY={
+  1:"自分で稼ぎ出す力あり。独立・副業で開ける。勢いの散財に注意。",2:"コツコツ堅実。人との縁がお金を運ぶ。大きな賭けより着実に。",
+  3:"稼ぐも使うも派手め。管理を仕組み化すると安定する。",4:"貯蓄・管理が得意な堅実型。地道な積み上げで資産を作れる。",
+  5:"収入の波が出やすい多才型。複数の収入源が向く。衝動買いに注意。",6:"家族や人のために使うタイプ。無理な出費に気をつけて。",
+  7:"計画的で堅実。知識で増やすのが得意。倹約とケチの線引きを。",8:"金運・ビジネス運が強い。大きく稼ぐ器。管理を怠らなければ資産家肌。",
+  9:"入るが出やすい。人助けに使いがちなので、将来の備えも忘れず。",11:"直感的な金運。ひらめきが当たることも。地に足つけた計画も併せて。",
+  22:"大きな資産を築く器。長期・大規模の視点でお金を動かせる。",33:"お金より人のために動く型。だからこそ生活基盤の確保を優先に。"};
+const ZN={
+  "牡羊座":{w:"スピードと突破力が武器。",l:"一目惚れ&猛アタック型。",m:"勢いで動く分、計画を添えて。",o:"火のエネルギーで前進あるのみ。"},
+  "牡牛座":{w:"粘り強さと安定感で信頼を得る。",l:"じっくり育てる一途な愛。",m:"貯蓄上手で金運は堅実。",o:"マイペースに着実に積む。"},
+  "双子座":{w:"情報力と機転で立ち回る。",l:"会話上手で軽やかな恋。",m:"情報からチャンスを掴む。",o:"好奇心が運を運んでくる。"},
+  "蟹座":{w:"面倒見の良さでチームを支える。",l:"愛情深く家庭的。",m:"堅実に守る貯蓄型。",o:"身近な縁が幸運の鍵。"},
+  "獅子座":{w:"存在感でリードし注目を集める。",l:"ドラマチックで情熱的。",m:"稼ぐ力は強いが見栄の出費に注意。",o:"自分が輝く場で運が開く。"},
+  "乙女座":{w:"緻密さと分析力で頼られる。",l:"誠実で献身的。",m:"管理上手で無駄がなく安定。",o:"丁寧さが信頼と運を呼ぶ。"},
+  "天秤座":{w:"調整とセンスで場を整える。",l:"魅力的でモテる社交派。",m:"人脈がチャンスに。浪費に注意。",o:"バランス感覚が幸運を招く。"},
+  "蠍座":{w:"集中力と洞察で成果を出す。",l:"深く一途に愛する情熱型。",m:"ここぞで大きく掴む勝負運。",o:"本気の集中が運を引き寄せる。"},
+  "射手座":{w:"大局観と行動力で開拓する。",l:"自由で楽しい恋を好む。",m:"チャンスに強いが浪費も。",o:"挑戦するほど運が広がる。"},
+  "山羊座":{w:"忍耐と計画で頂点を目指す。",l:"真面目で誠実な愛。",m:"長期でコツコツ資産形成。堅実。",o:"努力が着実に実る。"},
+  "水瓶座":{w:"独創性で新しい価値を生む。",l:"友達のような自由な関係。",m:"アイデアが収入源になる。",o:"個性を出すほど運が向く。"},
+  "魚座":{w:"想像力と共感で人を癒す。",l:"ロマンチックで献身的。",m:"人に流され出費しがち、備えを。",o:"直感を信じると道が開く。"}
+};
+/* 相性スコア（数字別 1-5） */
+const AFF={1:{w:5,l:3,m:4},2:{w:3,l:5,m:3},3:{w:4,l:4,m:3},4:{w:5,l:3,m:5},5:{w:3,l:4,m:3},6:{w:4,l:5,m:4},7:{w:4,l:2,m:3},8:{w:5,l:3,m:5},9:{w:4,l:4,m:3},11:{w:4,l:4,m:3},22:{w:5,l:3,m:5},33:{w:4,l:5,m:3}};
+function clamp(x){return Math.max(1,Math.min(5,x));}
+function starStr(k){return '★'.repeat(k)+'☆'.repeat(5-k);}
+
+/* 描画 */
+function medalHTML(v,glyph){
+  if(glyph)return '<span class="n glyph">'+glyph+'</span>';
+  const cls=String(v).length>1?'two':'one';
+  return '<span class="n '+cls+'">'+v+'</span>';
+}
+function numCard(cvar,slot,val,title,base){
+  const nm=NUM[val];
+  return '<section class="card reveal" style="--c:var('+cvar+')">'
+    +'<div class="medal">'+medalHTML(val,null)+'</div>'
+    +'<div class="card-body"><div class="slot">'+slot+'</div>'
+    +'<div class="title">'+title+' '+val+' ・ '+nm.label+'</div>'
+    +'<div class="desc">'+nm.desc+'</div>'
+    +'<div class="base">'+base+'</div>'
+    +'<div class="caution"><b>気をつけたい：</b>'+nm.caution+'</div></div></section>';
+}
+function zodCardHTML(z){
+  return '<section class="card reveal" style="--c:var(--zod)">'
+    +'<div class="medal"><span class="n glyph">'+z.g+'</span></div>'
+    +'<div class="card-body"><div class="slot">Zodiac</div>'
+    +'<div class="title">'+z.n+' ・ '+z.desc.split('。')[0]+'</div>'
+    +'<div class="desc">'+z.desc+'</div>'
+    +'<div class="meta">支配星：'+z.r+' ・ '+z.e+' ・ '+z.q+'</div>'
+    +'<div class="base">生年月日ベース ＝ 生まれ持った気質・スタイル</div>'
+    +'<div class="caution"><b>気をつけたい：</b>'+z.caution+'</div></div></section>';
+}
+function fortCard(cvar,name,rating,txt,wide){
+  return '<div class="fort reveal'+(wide?' wide':'')+'" style="--c:var('+cvar+')">'
+    +'<div class="fort-h"><span class="fort-name">'+name+'</span>'
+    +'<span class="stars">'+starStr(rating)+'</span></div>'
+    +'<div class="fort-txt">'+txt+'</div></div>';
+}
+
+function buildReading(lp,dest,soul,z){
+  const P=[];
+  const el=ELEM[z.e], q=QUAL[z.q];
+  /* ① ライフパス × ディスティニー × 星座エレメント */
+  if(lp!==dest){
+    P.push('あなたの中には、「<b>'+CONTRIB[lp]+'</b>」と「<b>'+CONTRIB[dest]+'</b>」が同居しています。だからあなたは、'+FLOW[lp]+'ところから、'+FLOW[dest]+'ところまでを、一つの流れとしてやり切れる人です。そこに<b>'+z.n+'</b>の“'+z.e+'”——'+el.power+'が加わることで、その流れは'+el.add+'を帯びます。'+z.n+'ならではの'+el.vibe+'で人を巻き込めるのが、あなたならではの持ち味です。');
+  }else{
+    P.push('あなたの生き方も、社会で果たす役割も、どちらも「<b>'+ROLE[lp]+'</b>」で一本に貫かれています。だから迷いが少なく、'+FLOW[lp]+'ことに、まっすぐ力を注げる人です。そこへ<b>'+z.n+'</b>の“'+z.e+'”——'+el.power+'が重なり、その軸は'+el.add+'を得て、いっそう揺るぎないものになります。');
+  }
+  /* ② 芯 × 星座の性質（宮） */
+  const trio=[lp,dest,soul];
+  if(lp===soul){
+    P.push('さらに、生き方（ライフパス）と内なる欲求（ソウル）が、どちらも<b>'+lp+'</b>で重なっています。「人に見せている顔」と「本当に望んでいること」が一致している——つまり'+ESSENCE[lp]+'は、あなたが演じている姿ではなく、あなたそのものだということです。しかも'+z.n+'は'+z.q+'。'+q+'を持つ星座なので、その芯は一度きりで終わらず、'+(z.q==='活動宮'?'自分から次々と形にしていけます':z.q==='不動宮'?'ブレずに深く育てていけます':'状況に合わせて長く活かし続けられます')+'。');
+  }else if(soul===dest){
+    P.push('内なる欲求（ソウル）と、社会で果たす役割（ディスティニー）が、どちらも<b>'+soul+'</b>で重なっています。やりたいことと、周りから求められることが一致している、恵まれた巡り合わせです。さらに'+z.n+'（'+z.q+'）の'+q+'が加わることで、その一致は「できる」で止まらず「やり切れる」ものになります。');
+  }else{
+    const counts={};trio.forEach(v=>{counts[v]=(counts[v]||0)+1;});
+    const rep=Object.keys(counts).find(k=>counts[k]>1);
+    if(rep){
+      P.push('数字を見ると<b>'+rep+'</b>が何度も現れています。それは、その資質があなたの中心にある証で、いわば主役級の強みです。そして'+z.n+'の'+q+'（'+z.q+'）がそれを支えるので、思いつきで終わらず、着実に積み上がっていきます。');
+    }else{
+      P.push('3つの数字がきれいに分かれているのも、あなたらしさです。場面ごとに違う顔を出せる、引き出しの多い人。その多面性を一つに束ねているのが、'+z.n+'の“'+z.e+'”——'+el.power+'です。ばらばらに見える強みも、'+z.e+'というエレメントの芯で一本に貫かれています。');
+    }
+  }
+  /* ③ マスターナンバー × 星座 */
+  const mn=trio.find(v=>v===11||v===22||v===33);
+  if(mn){
+    P.push('しかも<b>'+mn+'</b>という「マスターナンバー」を持っています。大きな可能性を秘めた特別な数字です。'+z.n+'の'+el.power+'を燃料にできれば、スケールの大きな何かを本当に成し遂げられる素質があります。');
+  }
+  /* ④ 数秘×星座を融合した、人ごとに変わる締め */
+  P.push('まとめると、あなたは<b>'+PERSONA[lp]+'</b>の資質を、'+z.n+'の“'+z.e+'”——'+el.power+'で動かしていく人です。'+MISSION[lp]+SKY[z.n]+' <span class="close">'+FINAL[z.e]+'</span>');
+  return P.map(t=>'<p>'+t+'</p>').join('');
+}
+
+function diagnose(){
+  const err=document.getElementById('err');
+  const nameRaw=document.getElementById('name').value.trim();
+  const nameRoma=kanaToRomaji(nameRaw);
+  if(!nameRaw){err.textContent='お名前を入れてね。';return;}
+  if(/[\u3040-\u30FF\u4E00-\u9FFF\u3400-\u4DBF]/.test(nameRoma)){
+    err.textContent='お名前はひらがな（ふりがな）で入れてね。漢字だと読みが取れないんだ。（例：せい　めい）';return;}
+  const letters=(nameRoma.toUpperCase().match(/[A-Z]/g)||[]).length;
+  if(letters<2){err.textContent='お名前をひらがなで入れてね（例：せい　めい）。';return;}
+  const digits=(document.getElementById('dob').value.match(/\d/g)||[]).join('');
+  if(digits.length!==8){err.textContent='生年月日は数字8桁で入れてね（例：19930818）。';return;}
+  const y=+digits.slice(0,4), m=+digits.slice(4,6), d=+digits.slice(6,8);
+  if(y<1900||y>2100||m<1||m>12||d<1||d>31){err.textContent='生年月日の数字を確認してね（例：19930818）。';return;}
+  err.textContent='';
+
+  const lp=lifePath(y,m,d);
+  const dest=nameSum(nameRoma,'all');
+  const soul=nameSum(nameRoma,'vowel');
+  const pers=nameSum(nameRoma,'cons');
+  const bday=reduceNum(d);
+  const mat=reduceNum(lp+dest);
+  const z=zodiac(m,d);
+
+  /* 称号 */
+  const shougou=MOOD[z.n]+PERSONA[lp];
+  document.getElementById('tbGlyph').textContent=z.g;
+  document.getElementById('tbTitle').textContent=shougou;
+  document.getElementById('tbSub').textContent='ライフパス '+lp+' 「'+NUM[lp].label.split('・')[0]+'」 × '+z.n;
+  const tb=document.getElementById('titlebar');
+  tb.classList.remove('reveal-title');void tb.offsetWidth;tb.classList.add('reveal-title');
+
+  document.getElementById('rName').textContent=nameRaw;
+  document.getElementById('rDate').textContent=y+'.'+String(m).padStart(2,'0')+'.'+String(d).padStart(2,'0');
+
+  /* コア */
+  document.getElementById('coreCards').innerHTML=
+    numCard('--lp','Life Path',lp,'ライフパス','生年月日ベース ＝ 生き方の基本トーン')
+   +numCard('--dest','Destiny',dest,'ディスティニー','フルネームベース ＝ 外に出る資質・果たす役割');
+
+  /* サブ */
+  document.getElementById('subCards').innerHTML=
+    numCard('--soul','Soul',soul,'ソウル','名前の母音ベース ＝ 内側の欲求・動機')
+   +numCard('--pers','Personality',pers,'パーソナリティ','名前の子音ベース ＝ 第一印象・外から見た雰囲気')
+   +numCard('--bday','Birthday',bday,'バースデー','生まれた日ベース ＝ 持って生まれた才能・ギフト')
+   +numCard('--mat','Maturity',mat,'マチュリティ','ライフパス＋ディスティニー ＝ 人生後半で花開く方向');
+
+  /* 星座 */
+  document.getElementById('zodCard').innerHTML=zodCardHTML(z);
+
+  /* 運勢 */
+  const wR=clamp(AFF[lp].w+(z.e==='火'?1:0));
+  const lR=clamp(AFF[soul].l+((z.e==='水'||z.e==='風')?1:0));
+  const mR=clamp(AFF[dest].m+(z.e==='地'?1:0));
+  const oR=Math.round((wR+lR+mR)/3);
+  const zn=ZN[z.n];
+  const overallTxt=NUM[lp].label+'を芯に、'+z.n+'（'+z.e+'）の気質が重なる人。'+zn.o
+    +' 強みを素直に出せる場に身を置くほど、運は自然に回り出す。';
+  document.getElementById('fortunes').innerHTML=
+    fortCard('--f-all','総合運',oR,overallTxt,true)
+   +fortCard('--f-work','仕事運',wR,WORK[lp]+' '+zn.w)
+   +fortCard('--f-love','恋愛運',lR,LOVE[soul]+' '+zn.l)
+   +fortCard('--f-money','金運',mR,MONEY[dest]+' '+zn.m);
+
+  /* 総合プロフィール */
+  document.getElementById('overview').textContent=
+    nameRaw+'さんは、'+NUM[lp].label+'の生き方に、'+NUM[dest].label
+    +'として世に出て、内には'+NUM[soul].label+'の欲求を持つ人。'+z.n+'生まれの'+z.e+'の気質が、その全体に'+z.desc.split('。')[0]+'の色を添えます。';
+
+  document.getElementById('reading').innerHTML=buildReading(lp,dest,soul,z);
+
+  /* 読みのヒント */
+  const trio=[lp,dest,soul];
+  const counts={};trio.forEach(v=>{counts[v]=(counts[v]||0)+1;});
+  const repeated=Object.keys(counts).filter(k=>counts[k]>1);
+  let overlap;
+  if(repeated.length){overlap='<span class="em">「'+repeated.join('・')+'」が複数の位置に出ている</span>＝その資質はこの人の芯に近い、と読める。';}
+  else{overlap='3つの数字がばらけている＝<span class="em">多面的で、場面によって違う顔を見せる</span>タイプと読める。';}
+  document.getElementById('synthText').innerHTML=
+    overlap+' 星座は'+z.e+'のエレメント（'+z.q+'）。数字と星座が同じ方向を指す部分は一貫した強み、ズレる部分こそ「その人らしさ」のヒントになる。'
+    +' <span class="em">最終的な判断は、実際に見ている姿を主に。</span>この結果はあくまで入口として。';
+
+  const res=document.getElementById('results');
+  res.hidden=false;res.scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('go').addEventListener('click',diagnose);
+document.getElementById('name').addEventListener('keydown',e=>{if(e.key==='Enter')diagnose();});
+document.getElementById('dob').addEventListener('keydown',e=>{if(e.key==='Enter')diagnose();});
+document.getElementById('dob').addEventListener('input',function(){
+  const dg=(this.value.match(/\d/g)||[]).join('').slice(0,8);
+  let out=dg.slice(0,4);
+  if(dg.length>4)out+='/'+dg.slice(4,6);
+  if(dg.length>6)out+='/'+dg.slice(6,8);
+  this.value=out;
+});
+document.getElementById('again').addEventListener('click',()=>{
+  document.getElementById('results').hidden=true;
+  document.getElementById('name').value='';document.getElementById('dob').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>document.getElementById('name').focus(),400);
+});
+</script>
+</body>
+</html>
